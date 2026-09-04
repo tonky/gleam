@@ -31,12 +31,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+          targets: wasm32-unknown-unknown
 
       - name: Rust Cache (Cargo dependencies & target)
         uses: Swatinem/rust-cache@v2
@@ -53,7 +54,7 @@ jobs:
           sudo chown -R $(whoami) /nix
 
       - name: Restore Nix Store Closures (L1 Cache)
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         id: nix-store-cache
         with:
           path: /nix/store
@@ -83,7 +84,7 @@ jobs:
           enve cache pull enve.lock -j 3 --cache "${CLOUDFLARE_BUCKET}" --trusted-public-key "${ENVE_CACHE_PUBLIC_KEY}" || true
 
       - name: Save Nix Store Closures to L1 Cache Immediately (Early Population)
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         if: steps.nix-store-cache.outputs.cache-hit != 'true'
         with:
           path: /nix/store
@@ -120,6 +121,11 @@ jobs:
           enve run -- just test-prelude
           enve run -- just test-types
 
+      - name: Verify WebAssembly Compiler (compiler-wasm)
+        shell: bash
+        run: |
+          enve run -- just test-wasm
+
       - name: Verify Hex Tarball Packaging
         shell: bash
         run: |
@@ -131,7 +137,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Inspect Native ARM64 Silicon Environment
         shell: bash
@@ -163,7 +169,7 @@ jobs:
           rebar3-version: "3"
 
       - name: Setup Node on Native ARM64
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
 

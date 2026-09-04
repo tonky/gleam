@@ -86,6 +86,7 @@
     "/nix/store/7645ix9bmf95gzhdf390pbifbzg13ba9-libtool-2.6.2-lib",
     "/nix/store/77pciwdgap4g3cdg1qj5qbdsr1jn7wiv-perl5.42.3-Crypt-URandom-0.55",
     "/nix/store/7a60q5dgnv6z96c279rc1nalyiw4mgqn-bash-interactive-5.3p15",
+    "/nix/store/7hk2ax3hgs4152cdqsqcq4lfq1a2kla6-deno-2.9.5",
     "/nix/store/7nff37k28y07vb6na882m7m3zqmdvjrm-perl5.42.3-HTML-Tagset-3.20",
     "/nix/store/7r6rbqyi0pqzyjps1yfg6s3k56mpli1k-mesa-libgbm-26.1.3",
     "/nix/store/7sq6ra1qdw8cd4z7j8l2dckm4w0hgm42-perl5.42.3-libwww-perl-6.83",
@@ -105,7 +106,7 @@
     "/nix/store/8mg2kw000kc0v6i4graafjbwymb96qnz-flac-1.5.0",
     "/nix/store/8rj53gly7jrkxracsdy57f0fw26j41p8-perl5.42.3-Test-RequiresInternet-0.05",
     "/nix/store/8rv2v4541pz5azfq86r2bm7wwwqy8dr0-lame-3.100-lib",
-    "/nix/store/7hk2ax3hgs4152cdqsqcq4lfq1a2kla6-deno-2.9.5",
+    "/nix/store/8rzh2fpa3lwqzx9iiz07qbk3b7lsjniw-deno-2.9.5",
     "/nix/store/8vqfy9aqxcb5akhpcqdm2iv4q6wx2rih-ngtcp2-1.23.0",
     "/nix/store/8yjpgadavqdwphcd2kw4dfvxmgdp5sb3-git-2.55.0",
     "/nix/store/8zxg6r5d2jw2x6vvhaw5xryvl74sa8aa-orc-0.4.42",
@@ -170,6 +171,7 @@
     "/nix/store/fgndr1mi5l1x995p3cmlyb1i5j8fzd2s-alsa-ucm-conf-1.2.16.1",
     "/nix/store/fl089m700c7zxqwgly18jyx0fs4lgbbj-gtk+3-3.24.52",
     "/nix/store/flrf7n55sjyn67wz17ql64sg53ra4jj8-gstreamer-1.28.6",
+    "/nix/store/fmhvqv5gsmjl0r8iqq7jinjr2mq7zvrz-wasm-pack-0.15.0",
     "/nix/store/fnwi54n3m48apqgfl6dskyc5zd2bxjp8-fribidi-1.0.16",
     "/nix/store/fvjava8j30snn73swinnx10x8c6s8sy7-libxinerama-1.1.6",
     "/nix/store/fwzl4in6i7pj30zp0rz3mx90cl6vg4km-libgcrypt-1.12.2-lib",
@@ -663,6 +665,7 @@
         "/nix/store/7645ix9bmf95gzhdf390pbifbzg13ba9-libtool-2.6.2-lib",
         "/nix/store/77pciwdgap4g3cdg1qj5qbdsr1jn7wiv-perl5.42.3-Crypt-URandom-0.55",
         "/nix/store/7a60q5dgnv6z96c279rc1nalyiw4mgqn-bash-interactive-5.3p15",
+        "/nix/store/7hk2ax3hgs4152cdqsqcq4lfq1a2kla6-deno-2.9.5",
         "/nix/store/7nff37k28y07vb6na882m7m3zqmdvjrm-perl5.42.3-HTML-Tagset-3.20",
         "/nix/store/7r6rbqyi0pqzyjps1yfg6s3k56mpli1k-mesa-libgbm-26.1.3",
         "/nix/store/7sq6ra1qdw8cd4z7j8l2dckm4w0hgm42-perl5.42.3-libwww-perl-6.83",
@@ -682,7 +685,7 @@
         "/nix/store/8mg2kw000kc0v6i4graafjbwymb96qnz-flac-1.5.0",
         "/nix/store/8rj53gly7jrkxracsdy57f0fw26j41p8-perl5.42.3-Test-RequiresInternet-0.05",
         "/nix/store/8rv2v4541pz5azfq86r2bm7wwwqy8dr0-lame-3.100-lib",
-        "/nix/store/7hk2ax3hgs4152cdqsqcq4lfq1a2kla6-deno-2.9.5",
+        "/nix/store/8rzh2fpa3lwqzx9iiz07qbk3b7lsjniw-deno-2.9.5",
         "/nix/store/8vqfy9aqxcb5akhpcqdm2iv4q6wx2rih-ngtcp2-1.23.0",
         "/nix/store/8yjpgadavqdwphcd2kw4dfvxmgdp5sb3-git-2.55.0",
         "/nix/store/8zxg6r5d2jw2x6vvhaw5xryvl74sa8aa-orc-0.4.42",
@@ -747,6 +750,7 @@
         "/nix/store/fgndr1mi5l1x995p3cmlyb1i5j8fzd2s-alsa-ucm-conf-1.2.16.1",
         "/nix/store/fl089m700c7zxqwgly18jyx0fs4lgbbj-gtk+3-3.24.52",
         "/nix/store/flrf7n55sjyn67wz17ql64sg53ra4jj8-gstreamer-1.28.6",
+        "/nix/store/fmhvqv5gsmjl0r8iqq7jinjr2mq7zvrz-wasm-pack-0.15.0",
         "/nix/store/fnwi54n3m48apqgfl6dskyc5zd2bxjp8-fribidi-1.0.16",
         "/nix/store/fvjava8j30snn73swinnx10x8c6s8sy7-libxinerama-1.1.6",
         "/nix/store/fwzl4in6i7pj30zp0rz3mx90cl6vg4km-libgcrypt-1.12.2-lib",
@@ -1053,6 +1057,11 @@
           "storePath": "/nix/store/ascrirvb6cbaz4z27j76qm74xy2cp9c6-typescript-5.9.3",
           "version": "5.9.3"
         },
+        "wasm-pack": {
+          "binPath": "/nix/store/fmhvqv5gsmjl0r8iqq7jinjr2mq7zvrz-wasm-pack-0.15.0/bin",
+          "storePath": "/nix/store/fmhvqv5gsmjl0r8iqq7jinjr2mq7zvrz-wasm-pack-0.15.0",
+          "version": "0.15.0"
+        },
         "watchexec": {
           "binPath": "/nix/store/3pp6q6jpywzn2r6298sn48fid4d1xc8v-watchexec-2.5.1/bin",
           "storePath": "/nix/store/3pp6q6jpywzn2r6298sn48fid4d1xc8v-watchexec-2.5.1",
@@ -1132,6 +1141,11 @@
       "binPath": "/nix/store/ascrirvb6cbaz4z27j76qm74xy2cp9c6-typescript-5.9.3/bin",
       "storePath": "/nix/store/ascrirvb6cbaz4z27j76qm74xy2cp9c6-typescript-5.9.3",
       "version": "5.9.3"
+    },
+    "wasm-pack": {
+      "binPath": "/nix/store/fmhvqv5gsmjl0r8iqq7jinjr2mq7zvrz-wasm-pack-0.15.0/bin",
+      "storePath": "/nix/store/fmhvqv5gsmjl0r8iqq7jinjr2mq7zvrz-wasm-pack-0.15.0",
+      "version": "0.15.0"
     },
     "watchexec": {
       "binPath": "/nix/store/3pp6q6jpywzn2r6298sn48fid4d1xc8v-watchexec-2.5.1/bin",

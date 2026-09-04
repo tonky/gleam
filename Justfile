@@ -115,7 +115,7 @@ build-wasm:
 
 # Run WebAssembly compiler tests
 test-wasm:
-    wasm-pack test --node compiler-wasm
+    unset CC && wasm-pack test --node compiler-wasm
 
 # -----------------------------------------------------------------------------
 # Top-Level Complete Test Pipeline

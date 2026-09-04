@@ -29,6 +29,7 @@ devEnv: schema.#DevEnvironment & {
 		pkgs.bun,
 		pkgs.deno,
 		pkgs.watchexec,
+		pkgs.wasm_pack,
 		pkgs.typescript,
 		pkgs.just,
 		pkgs.gnumake,
