@@ -43,6 +43,7 @@ jobs:
         with:
           shared-key: "gleam-shared-target"
           cache-all-crates: "true"
+          cache-on-failure: "true"
           save-if: "true"
 
       - name: Initialize Nix Store Directory
@@ -51,8 +52,8 @@ jobs:
           sudo mkdir -p /nix/store
           sudo chown -R $(whoami) /nix
 
-      - name: Cache Nix Store Closures (L1 Cache)
-        uses: actions/cache@v4
+      - name: Restore Nix Store Closures (L1 Cache)
+        uses: actions/cache/restore@v4
         id: nix-store-cache
         with:
           path: /nix/store
@@ -80,6 +81,13 @@ jobs:
         shell: bash
         run: |
           enve cache pull enve.lock -j 3 --cache "${CLOUDFLARE_BUCKET}" --trusted-public-key "${ENVE_CACHE_PUBLIC_KEY}" || true
+
+      - name: Save Nix Store Closures to L1 Cache Immediately (Early Population)
+        uses: actions/cache/save@v4
+        if: steps.nix-store-cache.outputs.cache-hit != 'true'
+        with:
+          path: /nix/store
+          key: ${{ steps.nix-store-cache.outputs.cache-primary-key || format('nix-store-{0}-{1}', runner.os, hashFiles('enve.lock')) }}
 
       - name: Real-Time Supply Chain Vulnerability Audit (enve shield)
         shell: bash
@@ -144,6 +152,7 @@ jobs:
         with:
           shared-key: "gleam-shared-target-aarch64"
           cache-all-crates: "true"
+          cache-on-failure: "true"
           save-if: "true"
 
       - name: Install Erlang & Elixir on Native ARM64
