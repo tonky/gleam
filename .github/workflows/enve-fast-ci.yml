@@ -42,10 +42,14 @@ jobs:
       - name: Rust Cache (Cargo dependencies & target)
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: "gleam-shared-target"
+          shared-key: "gleam-shared-target-v2"
           cache-all-crates: "true"
+          cache-workspace-crates: "true"
           cache-on-failure: "true"
           save-if: "true"
+          cache-directories: |
+            target/wasm32-unknown-unknown
+            ~/.cache/.wasm-pack
 
       - name: Initialize Nix Store Directory
         shell: bash
@@ -211,3 +215,81 @@ jobs:
           cd test_arm64_app
           ../target/release/gleam check
           ../target/release/gleam test
+
+  rust-beta-canary:
+    name: "Rust Beta Canary (Upcoming Language & Lints)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Rust Toolchain (Beta)
+        uses: dtolnay/rust-toolchain@beta
+        with:
+          components: clippy, rustfmt
+          targets: wasm32-unknown-unknown
+
+      - name: Rust Cache (Beta Shared Target)
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "gleam-shared-target-beta"
+          cache-all-crates: "true"
+          cache-workspace-crates: "true"
+          cache-on-failure: "true"
+          save-if: "true"
+          cache-directories: |
+            target/wasm32-unknown-unknown
+            ~/.cache/.wasm-pack
+
+      - name: Initialize Nix Store Directory
+        shell: bash
+        run: |
+          sudo mkdir -p /nix/store
+          sudo chown -R $(whoami) /nix
+
+      - name: Restore Nix Store Closures (L1 Cache)
+        uses: actions/cache/restore@v6
+        id: nix-store-cache
+        with:
+          path: /nix/store
+          key: nix-store-${{ runner.os }}-${{ hashFiles('enve.lock') }}
+          restore-keys: |
+            nix-store-${{ runner.os }}-
+
+      - name: Install hermetic enve binary from private cache
+        shell: bash
+        run: |
+          scripts/fetch_enve.sh /usr/local/bin/enve
+          enve --version
+
+      - name: Synchronize Pre-built Closures (L1 / L2 Zero-Egress R2)
+        shell: bash
+        run: |
+          enve cache pull enve.lock -j 3 --cache "${CLOUDFLARE_BUCKET}" --trusted-public-key "${ENVE_CACHE_PUBLIC_KEY}" || true
+
+      - name: Check Code Formatting (Beta)
+        shell: bash
+        run: |
+          cargo fmt --all -- --check
+
+      - name: Full Compiler Clippy Lints (Beta)
+        shell: bash
+        run: |
+          enve run -- cargo clippy --workspace -- -D warnings
+
+      - name: Run Core Compiler Unit Tests (Beta)
+        shell: bash
+        run: |
+          cargo test -p gleam-core --lib
+
+      - name: Run Polyglot Multi-Target Language Tests (Beta)
+        shell: bash
+        run: |
+          enve run -- just test-lang
+
+      - name: Verify WebAssembly Compiler (compiler-wasm, Beta)
+        shell: bash
+        run: |
+          enve run -- just test-wasm
