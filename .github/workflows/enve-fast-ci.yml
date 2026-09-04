@@ -1,0 +1,205 @@
+# SPDX-FileCopyrightText: 2026 Gleam Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+name: "enve Fast CI & Native ARM64 (Gleam PoC)"
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - "CHANGELOG.md"
+  push:
+    branches:
+      - main
+      - "feat/**"
+
+env:
+  CLOUDFLARE_BUCKET: "https://847959617b8d3ada9eb84238a37f56ec.r2.cloudflarestorage.com/gleam-enve-cache"
+  AWS_ENDPOINT_URL: "https://847959617b8d3ada9eb84238a37f56ec.r2.cloudflarestorage.com"
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ENVE_CACHE_PUBLIC_KEY: "gleam-cache-1:na3b/m8oWFE71SvB09Cer/eDBCQWDyKGBwKkYD9NquY="
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"
+
+jobs:
+  fast-pr-gatekeeper:
+    name: "Fast PR Gatekeeper (Quality, Security, Polyglot Matrix)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Rust Cache (Cargo dependencies & target)
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "gleam-shared-target"
+          cache-all-crates: "true"
+          save-if: "true"
+
+      - name: Initialize Nix Store Directory
+        shell: bash
+        run: |
+          sudo mkdir -p /nix/store
+          sudo chown -R $(whoami) /nix
+
+      - name: Cache Nix Store Closures (L1 Cache)
+        uses: actions/cache@v4
+        id: nix-store-cache
+        with:
+          path: /nix/store
+          key: nix-store-${{ runner.os }}-${{ hashFiles('enve.lock') }}
+          restore-keys: |
+            nix-store-${{ runner.os }}-
+
+      - name: Install hermetic enve binary from private cache
+        shell: bash
+        run: |
+          scripts/fetch_enve.sh /usr/local/bin/enve
+          enve --version
+
+      - name: Verify enve CUE environment schema
+        shell: bash
+        run: |
+          enve check enve.cue
+
+      - name: Verify Cloudflare R2 Binary Cache Connectivity
+        shell: bash
+        run: |
+          enve cache info --cache "${CLOUDFLARE_BUCKET}" || true
+
+      - name: Synchronize Pre-built Closures (L1 / L2 Zero-Egress R2)
+        shell: bash
+        run: |
+          enve cache pull enve.lock -j 3 --cache "${CLOUDFLARE_BUCKET}" --trusted-public-key "${ENVE_CACHE_PUBLIC_KEY}" || true
+
+      - name: Real-Time Supply Chain Vulnerability Audit (enve shield)
+        shell: bash
+        run: |
+          enve audit enve.cue
+
+      - name: Check Code Formatting
+        shell: bash
+        run: |
+          cargo fmt --all -- --check
+
+      - name: Full Compiler Clippy Lints
+        shell: bash
+        run: |
+          enve run -- cargo clippy --workspace -- -D warnings
+
+      - name: Run Core Compiler Unit Tests
+        shell: bash
+        run: |
+          cargo test -p gleam-core --lib
+
+      - name: Run Polyglot Multi-Target Language Tests (Erlang, Node, Deno, Bun)
+        shell: bash
+        run: |
+          enve run -- just test-lang
+
+      - name: Verify JavaScript Prelude & TypeScript Types
+        shell: bash
+        run: |
+          enve run -- just test-prelude
+          enve run -- just test-types
+
+      - name: Verify Hex Tarball Packaging
+        shell: bash
+        run: |
+          enve run -- just test-hex
+
+  native-arm64-validation:
+    name: "Native Linux ARM64 Verification (Zero QEMU)"
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Inspect Native ARM64 Silicon Environment
+        shell: bash
+        run: |
+          echo "========================================================================"
+          echo " 🚀 Native ARM64 Hardware Architecture Inspection"
+          echo "========================================================================"
+          echo " • Host Architecture: $(uname -m)"
+          echo " • Kernel:            $(uname -r)"
+          echo " • Available CPU:     $(nproc) vCPUs"
+          lscpu | head -n 20 || true
+
+      - name: Setup Rust Toolchain (Native aarch64)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust Cache (ARM64 Shared Target)
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "gleam-shared-target-aarch64"
+          cache-all-crates: "true"
+          save-if: "true"
+
+      - name: Cache APT Packages (Local SSD Fast Restore)
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives
+          key: apt-arm64-packages-${{ runner.os }}-${{ hashFiles('.github/workflows/enve-fast-ci.yml') }}
+          restore-keys: |
+            apt-arm64-packages-${{ runner.os }}-
+
+      - name: Install Native ARM64 Test Dependencies
+        shell: bash
+        run: |
+          sudo rm -f /etc/apt/apt.conf.d/docker-clean
+          echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' | sudo tee /etc/apt/apt.conf.d/keep-cache
+          sudo mkdir -p /var/cache/apt/archives/partial
+          sudo apt-get update -y
+          sudo apt-get install -y erlang-base erlang-dev nodejs gcc make
+          sudo rm -f /var/cache/apt/archives/lock
+          sudo chmod -R a+rwx /var/cache/apt/archives
+
+      - name: Run Native ARM64 Unit Tests
+        shell: bash
+        run: |
+          echo "========================================================================"
+          echo " 🧪 Running ARM64 Unit Tests (gleam-core)"
+          echo "========================================================================"
+          cargo test -p gleam-core --lib
+
+      - name: Build Native ARM64 Gleam Compiler
+        shell: bash
+        run: |
+          echo "========================================================================"
+          echo " 🔨 Compiling Native ARM64 Release Binary"
+          echo "========================================================================"
+          cargo build --release --bin gleam
+          ./target/release/gleam --version
+
+      - name: Run Native ARM64 Language Target Tests (Erlang & Node.js)
+        shell: bash
+        run: |
+          echo "========================================================================"
+          echo " 🧪 Running Language Integration Tests on Native ARM64"
+          echo "========================================================================"
+          cd test/language
+          cargo run --release -- clean
+          cargo run --release -- test --target erlang
+          cargo run --release -- test --target javascript --runtime nodejs
+
+      - name: End-to-End Project Creation & Verification on ARM64
+        shell: bash
+        run: |
+          echo "========================================================================"
+          echo " 📦 End-to-End Project Verification on Native ARM64 Silicon"
+          echo "========================================================================"
+          ./target/release/gleam new test_arm64_app
+          cd test_arm64_app
+          ../target/release/gleam check
+          ../target/release/gleam test

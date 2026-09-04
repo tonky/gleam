@@ -124,6 +124,7 @@ fn all_files_have_copyright_notice() {
 
                 // GitHub templates
                 "md" if path.starts_with("../.github/") => return None,
+                "cue" if path.starts_with("../cue.mod/") => return None,
 
                 // Static assets
                 "gz" => return None,
@@ -144,9 +145,11 @@ fn all_files_have_copyright_notice() {
 
                 // Generated files
                 "toml" if file_name == "manifest.toml" => return None,
+                "lock" if file_name == "enve.lock" => return None,
 
                 // Source files
                 "config" if file_name == "rebar.config" => (),
+                "cue" => (),
                 "css" => (),
                 "proto" => (),
                 "ts" => (),

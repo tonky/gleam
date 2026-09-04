@@ -6,6 +6,10 @@
 .idea/*
 erl_crash.dump
 *.lock
+!enve.lock
 node_modules/
 compiler-cli/build/
 gleam-licences.html
+*build_old*
+*_trash_build*
+.envrc
