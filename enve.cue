@@ -31,9 +31,6 @@ devEnv: schema.#DevEnvironment & {
 		pkgs.watchexec,
 		pkgs.typescript,
 		pkgs.just,
-		pkgs.gcc,
-		pkgs.mold,
-		pkgs.binutils,
 		pkgs.gnumake,
 		pkgs.procps,
 		pkgs.bat,
@@ -41,9 +38,6 @@ devEnv: schema.#DevEnvironment & {
 		pkgs.git,
 	]
 	environment: env.#Rust1_80Env & env.#ErlangEnv & env.#GleamEnv & env.#PosixEnv & {
-		CC:                                           "gcc"
-		CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER:   "gcc"
-		CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-C link-arg=-fuse-ld=mold"
 		GLEAM_LOG:                                    "trace"
 		RUST_BACKTRACE:                               1
 		PAGER:                                        "less"

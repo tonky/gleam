@@ -146,24 +146,17 @@ jobs:
           cache-all-crates: "true"
           save-if: "true"
 
-      - name: Cache APT Packages (Local SSD Fast Restore)
-        uses: actions/cache@v4
+      - name: Install Erlang & Elixir on Native ARM64
+        uses: erlef/setup-beam@v1
         with:
-          path: /var/cache/apt/archives
-          key: apt-arm64-packages-${{ runner.os }}-${{ hashFiles('.github/workflows/enve-fast-ci.yml') }}
-          restore-keys: |
-            apt-arm64-packages-${{ runner.os }}-
+          otp-version: "28"
+          elixir-version: "1.18"
+          rebar3-version: "3"
 
-      - name: Install Native ARM64 Test Dependencies
-        shell: bash
-        run: |
-          sudo rm -f /etc/apt/apt.conf.d/docker-clean
-          echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' | sudo tee /etc/apt/apt.conf.d/keep-cache
-          sudo mkdir -p /var/cache/apt/archives/partial
-          sudo apt-get update -y
-          sudo apt-get install -y erlang-base erlang-dev nodejs gcc make
-          sudo rm -f /var/cache/apt/archives/lock
-          sudo chmod -R a+rwx /var/cache/apt/archives
+      - name: Setup Node on Native ARM64
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
 
       - name: Run Native ARM64 Unit Tests
         shell: bash
